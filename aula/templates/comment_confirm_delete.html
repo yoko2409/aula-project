@@ -1,0 +1,6 @@
+<form method="post">
+    {% csrf_token %}
+    本当にコメントを削除しますか？
+    <button type="submit">削除</button>
+    <a href="{% url 'aula:index'%}">キャンセル</a>
+</form>

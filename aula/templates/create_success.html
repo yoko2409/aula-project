@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Success{% endblock %}
+
+    {% block contents %}
+<!--    Bootstrapのグリッドシステム-->
+    <br><br>
+    <div class="container">
+        <div class="row">
+            <div class="col offset-2">
+                <h4>投稿が完了しました！</h4>
+            </div>
+        </div>
+        <a href="{% url 'aula:index' %}">Aula - トップページ</a>
+    </div>
+    {% endblock %}

@@ -1,0 +1,52 @@
+{% load static %}
+<div class="album py-5">
+    <div class="container">
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <!--        レコードが格納されたobject_listからレコードを1行ずつrecordに取り出す-->
+            {% for record in object_list %}
+
+            <div class="col">
+                <div class="card shadow-sm">
+                    <a href="{% url 'aula:material_list' record.pk %}">
+                        {% if record.image %}
+                        <img src="{{ record.image.url }}" class="bd-placeholder-img card-img-top"
+                             width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img"
+                             aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                        {% else %}
+                        <img src="{% static 'img/def.png' %}" class="bd-placeholder-img card-img-top"
+                             width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img"
+                             aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                        {% endif %}
+                    </a>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <!--            titleフィールドを出力-->
+                            {{ record.title }}
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <!--              詳細ページを表示するボタン-->
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="location.href='{% url 'aula:course_detail' record.pk %}'">
+                                    View
+                                </button>
+                                <!--                  記事一覧を表示するボタン  -->
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="location.href='{% url 'aula:material_list' record.pk%}'">
+                                    資料
+                                </button>
+                            </div>
+                            <!--                投稿したユーザー名を出力-->
+                            <small class="text-muted">{{ record.teacher.username }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+

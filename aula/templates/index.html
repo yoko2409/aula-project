@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Aula{% endblock %}
+
+  {% block contents %}
+
+  {% if user.is_authenticated %}
+  {% include 'courses_list.html' %}
+  {% endif %}
+
+  {% endblock %}

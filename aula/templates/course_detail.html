@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}クラス詳細{% endblock %}
+  {% block contents %}
+<!--  Bootstrapのグリッドシステム-->
+  <br>
+  <div class="container">
+<!--    行の配置-->
+    <div class="row">
+<!--      列の左右に余白offset-3を入れる-->
+      <div class="col offset-3">
+<!--        タイトル-->
+        <h2>{{ object.title }}</h2>
+<!--        コメント-->
+        <p>{{ object.description }}</p>
+        <br>
+<!--          投稿日時-->
+        <p>{{ object.created_at }}</p>
+<!--       投稿写真がログイン中のユーザーのものであれば削除ボタンを表示   -->
+       {% if request.user == object.teacher %}
+       <form method="POST">
+<!--           リンク先のURL：photo/<Photo postsテーブルのid値>/delete/ -->
+           <a href="{% url 'aula:course_delete' object.pk %}" class="btn btn-primary my-2">削除する</a>
+       </form>
+       {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static widget_tweaks %}
+{% block title %}資料追加{% endblock %}
+
+{% block contents %}
+<br>
+<div class="contents">
+    <div class="row">
+        <div class="col offset-2">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <th>資料タイトル：</th>
+                        <td>
+                            <input type="text" name="{{ form.title.name }}" id="id_{{ form.title.name }}"
+                                   class="form-control" placeholder="タイトルを入力">
+                            {{ form.title.errors }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>資料内容：</th>
+                        <td>{{ form.content|add_class:"form-control" }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>添付ファイル：</th>
+                        <td>
+
+                            <input type="file" name="{{ form.file.name }}" id="id_{{ form.file.name }}"
+                                   class="form-control" placeholder="">
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <button type="submit" class="btn btn-primary">資料を追加</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

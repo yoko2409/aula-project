@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}クラス作成{% endblock %}
+
+{% block contents %}
+<br>
+<div class="contents">
+    <div class="row">
+        <div class="col offset-2">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <th>クラス名：</th>
+                        <td>
+                            {{ form.title|add_class:"form-control" }} <!-- `add_class`フィルターを使用してクラスを追加 -->
+                            {{ form.title.errors }} <!-- エラーメッセージを表示 -->
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>説明文：</th>
+                        <td>{{ form.description|add_class:"form-control" }}
+                            <!-- `description`フィールドにも `add_class`フィルターを適用 -->
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>画像：</th>
+                        <td>{{ form.image|add_class:"form-control" }} <!-- `image`フィールドにも `add_class`フィルターを適用 -->
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <button type="submit" class="btn btn-primary">クラスを作成する</button> <!-- Bootstrapのボタンクラスを適用 -->
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
