@@ -1,0 +1,15 @@
+<div class="container mt-5">
+    <h1>タイトル：{{ object.title }}</h1>
+    <p>説明文：{{ object.description }}</p>
+    {% for submission in submissions %}
+    <hr>
+    <p>提出者: {{ submission.student.username }}</p>
+    <p>タイムスタンプ: {{ submission.timestamp }}</p>
+    <p>ファイル：<a href="{{ submission.submitted_file.url }}" download>{{ submission.submitted_file }}</a></p>
+    <p>評価: {{ submission.grade }}/100</p>
+
+    <!-- その他のsubmissionのフィールドを表示する -->
+    <a href="{% url 'aula:submission_evaluation' submission.pk%}">評価する</a>
+    {% endfor %}
+    <hr>
+</div>

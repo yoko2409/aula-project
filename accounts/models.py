@@ -8,8 +8,7 @@ class CustomUser(AbstractUser):
     ADMIN = 'ADMIN'
     ROLE_CHOICES = [
         (STUDENT, 'Student'),
-        (TEACHER, 'Teacher'),
-        (ADMIN, 'Administrator')
+        (TEACHER, 'Teacher')
     ]
     role = models.CharField(
         max_length=10,

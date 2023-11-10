@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static widget_tweaks %}
+{% block title %}課題詳細{% endblock %}
+
+{% block contents %}
+
+{% if user.role == 'TEACHER' %}
+{% include 'assignment_result_teacher.html' %}
+{% else %}
+{% include 'assignment_result_student.html' %}
+{% endif %}
+
+{% endblock %}

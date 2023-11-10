@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static widget_tweaks %}
+{% block title %}課題更新{% endblock%}
+{% block contents %}
+<br>
+<div class="contents">
+    <div class="row">
+        <div class="col offset-2">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <th>課題タイトル：</th>
+                        <td>
+                            {{ form.title | add_class:"form-control" }}
+                            {{ form.title.errors }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>課題内容：</th>
+                        <td>{{ form.description|add_class:"form-control" }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>期限：</th>
+                        <td>{{ form.due_date|add_class:"form-control" }}</td>
+                    </tr>
+
+
+                </table>
+                <br>
+                <button type="submit" class="btn btn-primary">更新</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

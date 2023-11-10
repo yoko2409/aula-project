@@ -1,0 +1,11 @@
+{% extends 'base.html' %}  <!-- ベースとなるテンプレートを継承 -->
+
+{% block contents %}
+  <h2>ノートの編集</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}  <!-- フォームフィールドを段落タグで囲んで表示 -->
+    <button type="submit" class="btn btn-primary">更新する</button>
+    <a href="{% url 'aula:material_detail' object.target.pk %}" class="btn btn-secondary">キャンセル</a>
+  </form>
+{% endblock %}

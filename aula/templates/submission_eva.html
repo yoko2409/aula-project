@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static widget_tweaks %}
+{% block title %}評価{% endblock%}
+{% block contents %}
+
+<br>
+<div class="contents">
+    <div class="row">
+        <div class="col offset-2">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <th>評価：</th>
+                        <td>
+                            {{ form.grade | add_class:"form-control" }}
+                            {{ form.title.errors }}
+                        </td>
+                </table>
+                <br>
+                <button type="submit" class="btn btn-primary">評価する</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

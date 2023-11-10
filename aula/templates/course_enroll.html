@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}クラス登録{% endblock %}
+{% block contents %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Enroll Students">
+</form>
+{% endblock %}

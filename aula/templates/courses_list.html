@@ -26,15 +26,27 @@
                         </p>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
+                                {% if user.role != 'STUDENT' %}
+                                <!--              クラス登録ページを表示するボタン-->
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="location.href='{% url 'aula:enroll_course' record.pk %}'">
+                                    登録
+                                </button>
+                                {% endif %}
                                 <!--              詳細ページを表示するボタン-->
                                 <button type="button" class="btn btn-sm btn-outline-secondary"
                                         onclick="location.href='{% url 'aula:course_detail' record.pk %}'">
-                                    View
+                                    詳細
                                 </button>
                                 <!--                  記事一覧を表示するボタン  -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary"
                                         onclick="location.href='{% url 'aula:material_list' record.pk%}'">
                                     資料
+                                </button>
+                                <!--                  課題一覧を表示するボタン  -->
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="location.href='{% url 'aula:assignment_list' record.pk %}'">
+                                    課題
                                 </button>
                             </div>
                             <!--                投稿したユーザー名を出力-->
