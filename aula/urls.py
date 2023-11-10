@@ -18,5 +18,12 @@ urlpatterns = [
     path('material/updated', views.MaterialUpdateDoneView.as_view(), name='material_updated'),
     path('material/done', views.MaterialDoneView.as_view(), name='material_done'),
     path('material/comment/<int:pk>/', views.CommentView.as_view(), name='material_comment'),
-    path('material/note/<int:pk>/', views.NoteView.as_view(), name='material_note'),
+    path('material/note/<int:pk>/', views.NoteCreateView.as_view(), name='material_note'),
+    path('material/note/<int:pk>/update/', views.NoteUpdateView.as_view(), name='note_update'),
+    path('material/note/<int:pk>/delete/', views.NoteDeleteView.as_view(), name='note_delete'),
+    path('enroll/<int:course_id>', views.course_enroll, name='enroll_course'),
+    path('assignments/<int:course_id>/', views.AssignmentListView.as_view(), name='assignment_list'),
+    path('assignments/<int:course_id>/create/', views.AssignmentCreateView.as_view(), name='assignment_create'),
+    path('assignment/<int:pk>/', views.AssignmentDetailView.as_view(), name='assignment_detail'),
+    path('submissions/<int:pk>/create/', views.SubmissionCreateView.as_view(), name='submission_create'),
 ]

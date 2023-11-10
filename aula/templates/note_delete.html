@@ -1,0 +1,11 @@
+{% extends 'base.html' %}  <!-- ベースとなるテンプレートを継承 -->
+
+{% block contents %}
+  <h2>ノートの削除確認</h2>
+  <p>本当にこのノートを削除してもよろしいですか？</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">削除する</button>
+    <a href="{% url 'aula:material_detail' object.target.pk %}" class="btn btn-secondary">キャンセル</a>
+  </form>
+{% endblock %}

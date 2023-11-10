@@ -3,7 +3,8 @@
 {% block title %}Aula{% endblock %}
 
   {% block contents %}
-
+  {{ user.username }}:
+  {{ user.role }}
   {% if user.is_authenticated %}
   {% include 'courses_list.html' %}
   {% endif %}

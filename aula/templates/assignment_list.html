@@ -1,6 +1,4 @@
-{% extends 'base.html' %}
-
-{% block title %}資料一覧{% endblock %}
+{% extends "base.html" %}  <!-- あなたのベーステンプレート -->
 
 {% block contents %}
 <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
@@ -40,41 +38,21 @@
         </li>
     </ul>
 </div>
+<h2>{{ course_obj.title }}の課題リスト</h2>
 
-
-<br>
-<section class="rounded-3 bg-success py-5 text-center container">
-    <div class="row py-lg-5">
-        <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="text-bg-success">
-                {{ course_obj.title }}
-            </h1>
-        </div>
-    </div>
-</section>
-<br>
-<br>
-<div class="container">
-    {% for m in materials %}
-    <div class="container-sm text-center border border-dark-subtle rounded-3" onMouseOut="this.style.background='#fff';"
-         onMouseOver="this.style.background='#ccc'">
-        <div class="row d-flex justify-content-around">
-            <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
-               href="{% url 'aula:material_detail' m.pk%}" style="display: inline-block">
-                <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
-                    <p style="margin: 0;">
-                        <!--    投稿したユーザー名を出力-->
-                        {{ m.teacher.username }}さんが資料を投稿しました:<strong>{{ m.title }}</strong>
-                    </p>
-                    <small>
-                        <!--   投稿日時フィールドを出力-->
-                        {{ m.created_at | date:'m月d日' }}
-                    </small>
-                </div>
-            </a>
-
-        </div>
-    </div>
+<!-- 課題が存在する場合 -->
+{% if assignments %}
+<ul>
+    {% for assignment in assignments %}
+    <li>
+        <strong>{{ assignment.title }}</strong>
+        <p>{{ assignment.description }}</p>
+        <!-- 詳細ページへのリンク -->
+        <a href="{% url 'aula:assignment_detail' assignment.id %}">詳細を見る</a>
+    </li>
     {% endfor %}
-</div>
+</ul>
+{% else %}
+<p>このコースにはまだ課題がありません。</p>
+{% endif %}
 {% endblock %}

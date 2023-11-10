@@ -1,12 +1,44 @@
 {% extends 'base.html' %}
+{% load static widget_tweaks %}
 {% block title %}資料更新{% endblock%}
 {% block contents %}
 <br>
-<div class="container">
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">更新する</button>
-    </form>
+<div class="contents">
+    <div class="row">
+        <div class="col offset-2">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <th>資料タイトル：</th>
+                        <td>
+                            {{ form.title | add_class:"form-control" }}
+                            {{ form.title.errors }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>資料内容：</th>
+                        <td>{{ form.content|add_class:"form-control" }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>添付ファイル：</th>
+                        <td>
+                            {{ form.file | add_class:"form-control" }}
+                            {% if form.instance.file %}
+                                <label for="{{ form.delete_file.id_for_label }}">
+                                    {{ form.delete_file.label }}
+                                </label>
+                                {{ form.delete_file }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <button type="submit" class="btn btn-primary">資料を追加</button>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
