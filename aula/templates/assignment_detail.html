@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-<<<<<<< HEAD
 {% load static widget_tweaks %}
 {% block title %}課題詳細{% endblock %}
 
@@ -46,22 +45,4 @@
         </div>
 
     </div>
-=======
-{% block title %}課題詳細{% endblock %}
-{% block contents %}
-<div class="container">
-    <h1>タイトル：{{ object.title }}</h1>
-    <p>説明文：{{ object.description }}</p>
-    {% for submission in submissions %}
-    <hr>
-    <p>提出者: {{ submission.student.username }}</p>
-    <p>タイムスタンプ: {{ submission.timestamp }}</p>
-    <p>評価: {{ submission.grade }}/100</p>
-    <!-- その他のsubmissionのフィールドを表示する -->
-    {% endfor %}
-    <hr>
-    <!-- 提出物のリンクや提出物を作成するリンクを追加 -->
-    <a href="{% url 'aula:submission_create' object.pk %}">課題提出</a>
-</div>
->>>>>>> origin/master
 {% endblock %}

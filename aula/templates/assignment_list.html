@@ -1,10 +1,7 @@
-<<<<<<< HEAD
+
 {% extends "base.html" %}
 
 {% block title %}課題一覧{% endblock %}
-=======
-{% extends "base.html" %}  <!-- あなたのベーステンプレート -->
->>>>>>> origin/master
 
 {% block contents %}
 <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
@@ -44,7 +41,6 @@
         </li>
     </ul>
 </div>
-<<<<<<< HEAD
 
 <br>
 <section class="rounded-3 bg-primary py-5 text-center container">
@@ -90,23 +86,4 @@
     {% endfor %}
 </div>
 {% endblock %}
-=======
-<h2>{{ course_obj.title }}の課題リスト</h2>
 
-<!-- 課題が存在する場合 -->
-{% if assignments %}
-<ul>
-    {% for assignment in assignments %}
-    <li>
-        <strong>{{ assignment.title }}</strong>
-        <p>{{ assignment.description }}</p>
-        <!-- 詳細ページへのリンク -->
-        <a href="{% url 'aula:assignment_detail' assignment.id %}">詳細を見る</a>
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>このコースにはまだ課題がありません。</p>
-{% endif %}
-{% endblock %}
->>>>>>> origin/master
