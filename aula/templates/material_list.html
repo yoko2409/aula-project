@@ -21,11 +21,11 @@
         <li>
             <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
                     aria-pressed="false"
-                    onclick="location.href='{% url 'aula:assignment_create' course_obj.pk %}'">
+                    onclick="location.href='{% url 'aula:material_create' course_obj.pk %}'">
                 <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em">
                     <use href="#sun-fill"></use>
                 </svg>
-                課題投稿
+                資料投稿
             </button>
         </li>
         <li>
@@ -41,11 +41,12 @@
     </ul>
 </div>
 
+
 <br>
-<section class="rounded-3 bg-primary py-5 text-center container">
+<section class="rounded-3 bg-success py-5 text-center container">
     <div class="row py-lg-5">
         <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="text-bg-primary">
+            <h1 class="text-bg-success">
                 {{ course_obj.title }}
             </h1>
         </div>
@@ -53,34 +54,26 @@
 </section>
 <br>
 
-<div class="container">
-    <a href="{% url 'aula:material_list' course_obj.pk %}">資料</a>
-    <a href="{% url 'aula:assignment_list' course_obj.pk %}">課題</a>
-</div>
-
+{% for m in materials %}
 <br>
-<div class="container">
-    {% for m in materials %}
-    <div class="container-sm text-center border border-dark-subtle rounded-3" onMouseOut="this.style.background='#fff';"
-         onMouseOver="this.style.background='#ccc'">
-        <div class="row d-flex justify-content-around">
-            <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
-               href="{% url 'aula:material_detail' m.pk%}" style="display: inline-block">
-                <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
-                    <p style="margin: 0;">
-                        <!--    投稿したユーザー名を出力-->
-                        {{ m.teacher.username }}さんが資料を投稿しました:<strong>{{ m.title }}</strong>
-                    </p>
-                    <small>
-                        <!--   投稿日時フィールドを出力-->
-                        {{ m.created_at | date:'m月d日' }}
-                    </small>
-                </div>
-            </a>
+<div class="container-sm text-center border border-dark-subtle rounded-3" onMouseOut="this.style.background='#fff';"
+     onMouseOver="this.style.background='#ccc'">
+    <div class="row d-flex justify-content-around">
+        <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
+           href="{% url 'aula:material_detail' m.pk%}" style="display: inline-block">
+            <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
+                <p style="margin: 0;">
+                    <!--    投稿したユーザー名を出力-->
+                    {{ m.teacher.username }}さんが資料を投稿しました:<strong>{{ m.title }}</strong>
+                </p>
+                <small>
+                    <!--   投稿日時フィールドを出力-->
+                    {{ m.created_at | date:'m月d日' }}
+                </small>
+            </div>
+        </a>
 
-        </div>
     </div>
-    <br>
-    {% endfor %}
 </div>
+{% endfor %}
 {% endblock %}

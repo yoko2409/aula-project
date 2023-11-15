@@ -113,25 +113,3 @@ class Note(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True
     )
-
-class Assignment(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='assignments')
-    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
-    title = models.CharField(max_length=225)
-    description = models.TextField(blank=True, null=True)
-    due_date = models.DateTimeField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.title
-
-class Submission(models.Model):
-    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
-    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='submissions')
-    submitted_file = models.FileField(upload_to='submissions/')
-    timestamp = models.DateTimeField(auto_now_add=True)
-    grade = models.DecimalField(max_digits=3, decimal_places=0, default=0, null=True, blank=True)
-
-    def __str__(self):
-        return f"Submission by {self.student.username} for {self.assignment.title}"
