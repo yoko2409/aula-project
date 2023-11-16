@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, DeleteView
 from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy, reverse
-from .forms import CourseForm, CourseEnrollForm, MaterialForm, CommentForm, NoteForm, AssignmentForm, SubmissionForm, SubmissionEvaForm
+from .forms import CourseForm, CourseEnrollForm, MaterialForm, CommentForm, NoteForm, AssignmentForm, SubmissionForm, \
+    SubmissionEvaForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from .models import Course, Material, Comment, Note, Assignment, Submission
@@ -15,11 +16,13 @@ class IndexView(ListView):
     template_name = 'index.html'
 
     def get_queryset(self):
-        user = self.request.user
-        if user.role == user.TEACHER:
-            return Course.objects.filter(teacher=user).order_by('created_at')
-        else:
-            return Course.objects.filter(students=user).order_by('created_at')
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            if user.role == user.TEACHER:
+                return Course.objects.filter(teacher=user).order_by('created_at')
+            else:
+                return Course.objects.filter(students=user).order_by('created_at')
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -116,6 +119,7 @@ class MaterialUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         material_id = self.object.id
         return reverse_lazy('aula:material_detail', args=(material_id,))
 
+
 class MaterialUpdateDoneView(TemplateView):
     template_name = 'material_updated.html'
 
@@ -170,6 +174,7 @@ class NoteCreateView(LoginRequiredMixin, generic.edit.CreateView):
         note.save()
 
         return redirect('aula:material_detail', pk=material_pk)
+
 
 class NoteUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Note
@@ -262,6 +267,7 @@ class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
         assignment_id = self.object.id
         return reverse_lazy('aula:assignment_detail', args=(assignment_id,))
 
+
 class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
     model = Assignment
     template_name = 'assignment_delete.html'
@@ -269,6 +275,7 @@ class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         course_id = self.object.course.id
         return reverse_lazy('aula:assignment_list', args=(course_id,))
+
 
 class SubmissionCreateView(CreateView):
     model = Submission
