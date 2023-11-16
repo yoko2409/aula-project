@@ -9,8 +9,6 @@
     <p>ファイル：<a href="{{ submission.submitted_file.url }}" download>{{ submission.submitted_file }}</a></p>
     <p>評価: {{ submission.grade }}/100</p>
 
-    <!-- その他のsubmissionのフィールドを表示する -->
-    <a href="{% url 'aula:submission_evaluation' submission.pk%}">評価する</a>
     {% endif %}
     {% endfor %}
     <hr>
