@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -76,7 +77,6 @@ WSGI_APPLICATION = 'aulaproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-import dj_database_url
 DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3')
 }
