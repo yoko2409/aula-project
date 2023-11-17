@@ -1,9 +1,8 @@
-
 {% extends "base.html" %}
-
 {% block title %}課題一覧{% endblock %}
 
 {% block contents %}
+{% if user.role == 'TEACHER' %}
 <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
     <button class="btn btn-bd-primary py-2 d-flex align-items-center"
             id="bd-theme"
@@ -41,6 +40,7 @@
         </li>
     </ul>
 </div>
+{% endif %}
 
 <br>
 <section class="rounded-3 bg-primary py-5 text-center container">
