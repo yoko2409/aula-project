@@ -21,3 +21,4 @@ six==1.15.0
 sqlparse==0.4.1
 typing_extensions==4.8.0
 whitenoise==5.2.0
+psycopg2

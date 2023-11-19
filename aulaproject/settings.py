@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
 import dj_database_url
 import os
 
@@ -27,7 +26,7 @@ SECRET_KEY = 'django-insecure-52f!wune3@^-m++f3enbn$zicqteblo!zct&5og9mrnuz0xiu#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','https://aula-project-cb9dc2cc4ed6.herokuapp.com/']
+ALLOWED_HOSTS = ['*', 'https://aula-project-cb9dc2cc4ed6.herokuapp.com/']
 
 # Application definition
 
@@ -79,7 +78,7 @@ WSGI_APPLICATION = 'aulaproject.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default=config('DATABASE_URL', default='sqlite:///db.sqlite3'))
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
