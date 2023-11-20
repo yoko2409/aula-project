@@ -13,7 +13,7 @@
           <p>削除してもいいですか?</p>
           {% csrf_token %}
           <button class="btn btn-primary my-2" type="submit">削除</button>
-          <a href="{% url 'aula:material_detail' object.pk %}" class="btn btn-secondary my-2">キャンセル</a>
+          <a href="{% url 'aula:index' %}" class="btn btn-secondary my-2">キャンセル</a>
         </form>
       </div>
     </div>
