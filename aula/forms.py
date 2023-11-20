@@ -88,3 +88,5 @@ class SubmissionEvaForm(ModelForm):
     class Meta:
         model = Submission
         fields = ['grade']
+
+# フォーム
