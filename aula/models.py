@@ -15,7 +15,7 @@ class Course(models.Model):
     )
     image = models.ImageField(
         verbose_name='イメージ',
-        upload_to='courses',
+        upload_to='media/courses',
         blank=True,
         null=True,
     )
