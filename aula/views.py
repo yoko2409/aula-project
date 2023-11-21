@@ -13,6 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 # Create your views here.
 class IndexView(ListView):
+    model = Course
     template_name = 'index.html'
 
     def get_queryset(self):
