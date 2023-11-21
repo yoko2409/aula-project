@@ -1,4 +1,7 @@
 asgiref==3.7.2
+config==0.5.1
+decouple==0.0.7
+dj-database-url==2.1.0
 Django==4.0
 django-cleanup==8.0.0
 django-crispy-forms==1.9.2
@@ -11,8 +14,11 @@ gunicorn==20.0.4
 mock==4.0.2
 Pillow==8.0.1
 python-dateutil==2.8.1
+python-decouple==3.8
 python-dotenv==0.15.0
 pytz==2020.4
 six==1.15.0
 sqlparse==0.4.1
+typing_extensions==4.8.0
 whitenoise==5.2.0
+psycopg2

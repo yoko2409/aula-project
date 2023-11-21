@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'aula'
 
@@ -31,4 +33,4 @@ urlpatterns = [
     path('submissions/<int:pk>/create/', views.SubmissionCreateView.as_view(), name='submission_create'),
     path('submissions/<int:pk>/eva/', views.SubmissionEvaView.as_view(), name='submission_evaluation'),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

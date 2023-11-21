@@ -1,1 +1,1 @@
-web: gunicorn aulaproject.wsgi
+web: gunicorn aulaproject.wsgi --log-file -
