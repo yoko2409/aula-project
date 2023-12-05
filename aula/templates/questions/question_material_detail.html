@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static widget_tweaks %}
-{% block title %}資料詳細{% endblock %}
+{% block title %}質問詳細{% endblock %}
 
 {% block contents %}
 <div class="container d-flex mt-5">
@@ -44,9 +44,52 @@
                     </svg>
                 </a>
             </div>
+
+            <div>
+                {% if object.teacher == user %}
+                <a href="{% url 'aula:question_create' object.pk %}">質問追加</a>
+                {% endif %}
+                <a href="{% url 'aula:question_answer' object.pk %}">質問回答</a>
+            </div>
         </div>
 
         <hr class="my-4">
+        <!-- 質問と選択肢、回答のセクション -->
+
+        {% if questions %}
+        {% if object.teacher == user %}
+        <div class="mt-4">
+            <h4>関連する質問:</h4>
+            {% for question in questions %}
+            {% if question.answer_set.exists %}  <!-- 回答が存在する質問のみ表示 -->
+            <div class="card mt-2">
+                <div class="card-body">
+                    <h5 class="card-title">{{ question.title }}</h5>
+                    <p class="card-text">{{ question.description }}</p>
+                    <!-- 選択肢の表示 -->
+                    <ul class="list-group list-group-flush">
+                        {% for choice in question.choices.all %}
+                        <li class="list-group-item">{{ choice.text }}</li>
+                        {% endfor %}
+                    </ul>
+                    <!-- 回答の表示 -->
+                    <div class="mt-2">
+                        <h6>回答:</h6>
+                        <ul>
+                            {% for answer in question.answer_set.all %}
+                            <li>{{ answer.user.username }}: {{ answer.selected_choice.text }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <hr class="my-4">
+        {% endif %}
+        {% endif %}
 
         <div class="mt-4">
             <h4>クラスのコメント:</h4>
@@ -68,7 +111,8 @@
             </div>
             <!-- コメントのフォーム -->
             <div class="mt-4">
-                <form class="d-flex" action="{% url 'aula:material_comment' object.pk %}" method="post" onkeypress="submitOnEnter(event)">
+                <form class="d-flex" action="{% url 'aula:material_comment' object.pk %}" method="post"
+                      onkeypress="submitOnEnter(event)">
                     {% csrf_token %}
                     <div class="form-group me-2">
                         {{ comment_form.content|add_class:"form-control" }}
@@ -103,7 +147,8 @@
             {% endfor %}
         </div>
         <div class="mt-4 mb-4">
-            <form class="d-flex" action="{% url 'aula:material_note' object.pk %}" method="post" onkeypress="submitOnEnter(event)">
+            <form class="d-flex" action="{% url 'aula:material_note' object.pk %}" method="post"
+                  onkeypress="submitOnEnter(event)">
                 {% csrf_token %}
                 <div class="form-group me-2">
                     {{ note_form.content|add_class:"form-control" }}
@@ -111,6 +156,7 @@
                 <button type="submit" class="btn btn-primary">送信</button>
             </form>
         </div>
+
     </div>
     {% endif %}
 </div>

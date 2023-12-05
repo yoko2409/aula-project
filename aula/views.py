@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, DeleteView
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, FormView
 from django.urls import reverse_lazy, reverse
+from django.utils import timezone
 from .forms import CourseForm, CourseEnrollForm, MaterialForm, CommentForm, NoteForm, AssignmentForm, SubmissionForm, \
-    SubmissionEvaForm
+    SubmissionEvaForm, AnswerForm, ChoiceForm, QuestionForm, ChoiceFormSet
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from .models import Course, Material, Comment, Note, Assignment, Submission
+from .models import Course, Material, Comment, Note, Assignment, Submission, Question, Choice, Answer
 from django.views import View, generic
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
@@ -23,7 +24,6 @@ class IndexView(ListView):
                 return Course.objects.filter(teacher=user).order_by('created_at')
             else:
                 return Course.objects.filter(students=user).order_by('created_at')
-
 
 
 @method_decorator(login_required, name='dispatch')
@@ -81,6 +81,7 @@ class MaterialCreateView(CreateView):
         course = get_object_or_404(Course, pk=course_id)
         form.instance.course_name = course
         form.instance.teacher = self.request.user
+        form.instance.role = 'material'
 
         return super().form_valid(form)
 
@@ -116,9 +117,15 @@ class MaterialUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         return self.request.user == self.get_object().teacher
 
+
     def get_success_url(self):
         material_id = self.object.id
-        return reverse_lazy('aula:material_detail', args=(material_id,))
+        material = get_object_or_404(Material, pk=material_id)
+
+        if material.role == 'material':
+            return reverse_lazy('aula:material_detail', args=(material_id,))
+        elif material.role == 'question':
+            return reverse_lazy('aula:question_material_detail', args=(material_id,))
 
 
 class MaterialUpdateDoneView(TemplateView):
@@ -158,7 +165,10 @@ class CommentView(LoginRequiredMixin, generic.edit.CreateView):
         comment.target = material
         comment.save()
 
-        return redirect('aula:material_detail', pk=material_pk)
+        if material.role == 'material':
+            return redirect('aula:material_detail', pk=material_pk)
+        elif material.role == 'question':
+            return redirect('aula:question_material_detail', pk=material_pk)
 
 
 class NoteCreateView(LoginRequiredMixin, generic.edit.CreateView):
@@ -174,7 +184,10 @@ class NoteCreateView(LoginRequiredMixin, generic.edit.CreateView):
         note.target = material
         note.save()
 
-        return redirect('aula:material_detail', pk=material_pk)
+        if material.role == 'material':
+            return redirect('aula:material_detail', pk=material_pk)
+        elif material.role == 'question':
+            return redirect('aula:question_material_detail', pk=material_pk)
 
 
 class NoteUpdateView(LoginRequiredMixin, generic.UpdateView):
@@ -184,7 +197,12 @@ class NoteUpdateView(LoginRequiredMixin, generic.UpdateView):
 
     def get_success_url(self):
         material_pk = self.object.target.pk
-        return reverse_lazy('aula:material_detail', kwargs={'pk': material_pk})
+        material = get_object_or_404(Material, pk=material_pk)
+
+        if material.role == 'material':
+            return reverse_lazy('aula:material_detail', kwargs={'pk': material_pk})
+        elif material.role == 'question':
+            return reverse_lazy('aula:question_material_detail', kwargs={'pk': material_pk})
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -197,12 +215,16 @@ class NoteDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         material_pk = self.object.target.pk
-        return reverse_lazy('aula:material_detail', kwargs={'pk': material_pk})
+        material = get_object_or_404(Material, pk=material_pk)
+
+        if material.role == 'material':
+            return reverse_lazy('aula:material_detail', kwargs={'pk': material_pk})
+        elif material.role == 'question':
+            return reverse_lazy('aula:question_material_detail', kwargs={'pk': material_pk})
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super(NoteDeleteView, self).delete(request, *args, **kwargs)
-
 
 class AssignmentListView(ListView):
     model = Assignment
@@ -218,6 +240,7 @@ class AssignmentListView(ListView):
         context = super(AssignmentListView, self).get_context_data(**kwargs)
         course_id = self.kwargs.get('course_id')
         context['course_obj'] = get_object_or_404(Course, id=course_id)
+        context['now'] = timezone.now()  # 現在の日付と時刻を追加
         return context
 
 
@@ -304,3 +327,160 @@ class SubmissionEvaView(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         assignment_id = self.object.assignment.id
         return reverse_lazy('aula:assignment_result', args=(assignment_id,))
+
+
+@method_decorator(login_required, name='dispatch')
+class QuestionMaterialCreateView(CreateView):
+    form_class = MaterialForm
+    model = Material
+    template_name = 'material_create.html'
+
+    def form_valid(self, form):
+        course_id = self.kwargs.get('course_id')
+        course = get_object_or_404(Course, pk=course_id)
+        form.instance.course_name = course
+        form.instance.teacher = self.request.user
+        form.instance.role = 'question'
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        course_id = self.object.course_name.id
+        return reverse_lazy('aula:material_list', args=(course_id,))
+
+class QuestionMaterialDetail(LoginRequiredMixin, DetailView):
+    template_name = 'questions/question_material_detail.html'
+    model = Material
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comment_form'] = CommentForm
+        context['note_form'] = NoteForm
+
+        material = self.get_object()
+        context['questions'] = Question.objects.filter(material=material)
+
+        return context
+
+class QuestionCreateView(UserPassesTestMixin, CreateView):
+    model = Question
+    fields = ['title', 'description']
+    template_name = 'questions/question_create.html'
+
+    def form_valid(self, form):
+        course_id = self.kwargs.get('course_id')
+        course = get_object_or_404(Course, pk=course_id)
+        form.instance.course = course
+        form.instance.teacher = self.request.user
+
+        return super().form_valid(form)
+
+    def test_func(self):
+        return self.request.user.is_teacher()
+
+    def get_success_url(self):
+        return reverse_lazy('aula:question_detail', kwargs={'pk': self.object.pk})
+
+
+class QuestionDetailView(LoginRequiredMixin, DetailView):
+    model = Question
+    template_name = 'questions/question_detail.html'
+    context_object_name = 'question'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['choices'] = self.object.choices.all()
+        return context
+
+@method_decorator(login_required, name='dispatch')
+class QuestionMaterialCreateView(CreateView):
+    form_class = MaterialForm
+    model = Material
+    template_name = 'material_create.html'
+
+    def form_valid(self, form):
+        course_id = self.kwargs.get('course_id')
+        course = get_object_or_404(Course, pk=course_id)
+        form.instance.course_name = course
+        form.instance.teacher = self.request.user
+        form.instance.role = 'question'
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        course_id = self.object.course_name.id
+        return reverse_lazy('aula:question_list', args=(course_id,))
+
+class QuestionListView(LoginRequiredMixin, View):
+
+    def get(self, request, course_id):
+        materials = Material.objects.filter(course_name=course_id)
+        course_obj = Course.objects.get(id=course_id)
+        return render(request, 'questions/question_list.html', {'materials': materials, 'course_obj': course_obj})
+
+
+class ChoiceCreateView(LoginRequiredMixin, CreateView):
+    model = Choice
+    form_class = ChoiceForm
+    template_name = 'questions/choice_create.html'
+
+    def get_success_url(self):
+        return reverse_lazy('aula:question_detail', kwargs={'pk': self.object.question.pk})
+
+    def form_valid(self, form):
+        question_id = self.kwargs.get('pk')
+        question = get_object_or_404(Question, pk=question_id)
+        form.instance.question = question
+
+        return super().form_valid(form)
+
+
+class AnswerQuestionView(View):
+    def get(self, request, pk):
+        material = get_object_or_404(Material, pk=pk)
+        questions = material.questions.all()
+        forms = {question.id: AnswerForm(question=question) for question in questions}
+        return render(request, 'questions/question_answer.html', {'forms': forms, 'questions': questions})
+
+    def post(self, request, pk):
+        material = get_object_or_404(Material, pk=pk)
+        questions = material.questions.all()
+        answers = []
+        for question in questions:
+            form = AnswerForm(request.POST, question=question)
+            if form.is_valid():
+                answer = form.save(commit=False)
+                answer.question = question
+                answer.user = request.user
+                # フォームデータから選択された選択肢を取得
+                choice_field_name = f'selected_choice_{question.id}'
+                answer.selected_choice = form.cleaned_data[choice_field_name]
+                answers.append(answer)
+
+        # すべてのフォームが有効であれば回答を保存
+        if len(answers) == len(questions):
+            for answer in answers:
+                answer.save()
+            return redirect('aula:question_material_detail', pk=material.pk)
+
+        # フォームの再表示
+        forms = {question.id: AnswerForm(question=question) for question in questions}
+        return render(request, 'questions/question_answer.html', {'forms': forms, 'questions': questions})
+
+def question_choice_create_view(request, pk):
+    material = get_object_or_404(Material, pk=pk)
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+        formset = ChoiceFormSet(request.POST)
+        if form.is_valid() and formset.is_valid():
+            question = form.save(commit=False)
+            question.material = material
+            question.save()
+            formset.instance = question
+            formset.save()
+            return redirect('aula:question_material_detail', pk=pk)
+    else:
+        form = QuestionForm()
+        formset = ChoiceFormSet()
+
+    return render(request, 'questions/choice_create.html', {'form': form, 'formset': formset})

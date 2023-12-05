@@ -2,44 +2,9 @@
 {% block title %}課題一覧{% endblock %}
 
 {% block contents %}
-{% if user.role == 'TEACHER' %}
-<div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
-    <button class="btn btn-bd-primary py-2 d-flex align-items-center"
-            id="bd-theme"
-            type="button"
-            aria-expanded="false"
-            data-bs-toggle="dropdown"
-            aria-label="Toggle theme (auto)">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus"
-             viewBox="0 0 16 16">
-            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-        </svg>
 
-        <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
-        <li>
-            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
-                    aria-pressed="false"
-                    onclick="location.href='{% url 'aula:assignment_create' course_obj.pk %}'">
-                <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em">
-                    <use href="#sun-fill"></use>
-                </svg>
-                課題投稿
-            </button>
-        </li>
-        <li>
-            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
-                    aria-pressed="false"
-                    onclick="location.href='{% url 'aula:material_create' course_obj.pk %}'">
-                <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em">
-                    <use href="#sun-fill"></use>
-                </svg>
-                資料投稿
-            </button>
-        </li>
-    </ul>
-</div>
+{% if user.role == 'TEACHER' %}
+{% include 'post_btn.html' %}
 {% endif %}
 
 <br>
@@ -54,36 +19,53 @@
 </section>
 <br>
 
-<div class="container">
-    <a href="{% url 'aula:material_list' course_obj.pk %}">資料</a>
-    <a href="{% url 'aula:assignment_list' course_obj.pk %}">課題</a>
-</div>
-
+{% include 'trans_btn.html' %}
 
 <br>
 <div class="container">
     {% for assignment in assignments %}
-    <div class="container-sm text-center border border-dark-subtle rounded-3" onMouseOut="this.style.background='#fff';"
-         onMouseOver="this.style.background='#ccc'">
-        <div class="row d-flex justify-content-around">
-            <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
-               href="{% url 'aula:assignment_detail' assignment.id%}" style="display: inline-block">
-                <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
-                    <p style="margin: 0;">
-                        <!--    投稿したユーザー名を出力-->
-                        {{ assignment.teacher.username }}さんが課題を投稿しました:<strong>{{ assignment.title }}</strong>
-                    </p>
-                    <small>
-                        <!--   投稿日時フィールドを出力-->
-                        {{ assignment.created_at | date:'m月d日' }}
-                    </small>
+        <!-- 現在の日付と課題の期限を比較 -->
+        {% if assignment.due_date < now %}
+            <!-- 期限切れの場合は赤い背景色とその他のスタイルを適用 -->
+            <div class="container-sm text-center border border-danger rounded-3" style="background-color: red;">
+                <div class="row d-flex justify-content-around">
+                    <a class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0" href="{% url 'aula:assignment_detail' assignment.id %}" style="display: inline-block;">
+                        <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left; font-weight: bold;">
+                            <p style="margin: 0; color: white;">
+                                <span style="color: yellow;">&#9888;</span> <!-- 警告アイコン -->
+                                {{ assignment.teacher.username }}さんが課題を投稿しました: <strong>{{ assignment.title }}</strong>
+                                <span style="color: yellow;">&#9888;</span> <!-- 警告アイコン -->
+                            </p>
+                            <small style="color: white">
+                                {{ assignment.created_at | date:'m月d日' }}
+                                (期限: {{ assignment.due_date | date:'m月d日' }})
+                            </small>
+                        </div>
+                    </a>
                 </div>
-            </a>
-
-        </div>
-    </div>
-    <br>
+            </div>
+        {% else %}
+            <!-- 期限内の場合は通常のスタイルを適用 -->
+            <div class="container-sm text-center border border-dark-subtle rounded-3" onMouseOut="this.style.background='#fff';" onMouseOver="this.style.background='#ccc'">
+                <div class="row d-flex justify-content-around">
+                    <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0" href="{% url 'aula:assignment_detail' assignment.id %}" style="display: inline-block;">
+                        <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
+                            <p style="margin: 0;">
+                                {{ assignment.teacher.username }}さんが課題を投稿しました: <strong>{{ assignment.title }}</strong>
+                            </p>
+                            <small>
+                                {{ assignment.created_at | date:'m月d日' }}
+                                (期限: {{ assignment.due_date | date:'m月d日' }})
+                            </small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+        <br>
     {% endfor %}
 </div>
+
+
 {% endblock %}
 

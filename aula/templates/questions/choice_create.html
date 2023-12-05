@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static widget_tweaks %}
+{% block title %}質問追加{% endblock %}
+
+{% block contents %}
+<br>
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div id="formset">
+            {{ formset.management_form }}
+            {% for form in formset %}
+            <div class="formset-row">
+                {{ form.as_p }}
+            </div>
+            {% endfor %}
+        </div>
+        <button type="submit">追加</button>
+    </form>
+
+</div>
+<script src="{% static 'js/question.js' %}" defer></script>
+{% endblock %}

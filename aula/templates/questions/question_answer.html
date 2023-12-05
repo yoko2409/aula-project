@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load my_tags %}
+
+{% block title %}質問回答{% endblock %}
+
+{% block contents %}
+<form method="post">
+    {% csrf_token %}
+
+
+{% for question in questions %}
+    <div>
+        <h3>{{ question.title }}</h3>
+        {% with form=forms|get_form:question.id %}
+            {% for field in form %}
+                {{ field.errors }}
+                {{ field }}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% endfor %}
+        {% endwith %}
+    </div>
+{% endfor %}
+    <button type="submit">回答</button>
+</form>
+{% endblock %}

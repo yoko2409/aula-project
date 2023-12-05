@@ -1,5 +1,5 @@
-from django.forms import ModelForm
-from .models import Course, Material, Comment, Note, CustomUser, Assignment, Submission
+from django.forms import ModelForm, inlineformset_factory
+from .models import Course, Material, Comment, Note, CustomUser, Assignment, Submission, Choice, Answer, Question
 from django import forms
 
 
@@ -89,4 +89,31 @@ class SubmissionEvaForm(ModelForm):
         model = Submission
         fields = ['grade']
 
-# フォーム
+class ChoiceForm(forms.ModelForm):
+    class Meta:
+        model = Choice
+        fields = ['text']
+
+class AnswerForm(forms.ModelForm):
+
+    class Meta:
+        model = Answer
+        fields = []
+
+    def __init__(self, *args, **kwargs):
+        question = kwargs.pop('question', None)
+        super(AnswerForm, self).__init__(*args, **kwargs)
+        if question:
+            self.fields[f'selected_choice_{question.id}'] = forms.ModelChoiceField(
+                queryset=question.choices.all(),
+                widget=forms.RadioSelect,
+                empty_label=None
+            )
+
+
+class QuestionForm(forms.ModelForm):
+    class Meta:
+        model = Question
+        fields = ['title', 'description']
+
+ChoiceFormSet = inlineformset_factory(Question, Choice, fields=('text',), extra=1,)

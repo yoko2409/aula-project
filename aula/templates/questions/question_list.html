@@ -1,6 +1,5 @@
-{% extends 'base.html' %}
-
-{% block title %}資料一覧{% endblock %}
+{% extends "base.html" %}
+{% block title %}質問一覧{% endblock %}
 
 {% block contents %}
 
@@ -25,16 +24,16 @@
 <br>
 <div class="container">
     {% for m in materials %}
-    {% if m.role == 'material' %}
+    {% if m.role == 'question' %}
     <div class="container-sm text-center border border-dark-subtle rounded-3" onMouseOut="this.style.background='#fff';"
          onMouseOver="this.style.background='#ccc'">
         <div class="row d-flex justify-content-around">
             <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
-               href="{% url 'aula:material_detail' m.pk%}" style="display: inline-block">
+               href="{% url 'aula:question_material_detail' m.id%}" style="display: inline-block">
                 <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
                     <p style="margin: 0;">
                         <!--    投稿したユーザー名を出力-->
-                        {{ m.teacher.username }}さんが資料を投稿しました:<strong>{{ m.title }}</strong>
+                        {{ m.teacher.username }}さんが質問を投稿しました:<strong>{{ m.title }}</strong>
                     </p>
                     <small>
                         <!--   投稿日時フィールドを出力-->
@@ -45,7 +44,11 @@
 
         </div>
     </div>
+
     <br>
     {% endif %}
     {% endfor %}
-    {% endblock %}
+</div>
+{% endblock %}
+
+

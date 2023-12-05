@@ -17,5 +17,8 @@ class CustomUser(AbstractUser):
         verbose_name='Role'
     )
 
+    def is_teacher(self):
+        return self.role == self.TEACHER
+
     def __str__(self):
         return self.username

@@ -70,6 +70,16 @@ class Material(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True
     )
+    ROLE_CHOICES = (
+        ('question', '質問'),
+        ('material', '資料'),
+    )
+    role = models.CharField(
+        verbose_name='役割',
+        max_length=10,
+        choices=ROLE_CHOICES,
+        default='material',
+    )
 
     def __str__(self):
         return self.title
@@ -142,3 +152,27 @@ class Submission(models.Model):
 
     def __str__(self):
         return f"Submission by {self.student.username} for {self.assignment.title}"
+
+class Question(models.Model):
+    material = models.ForeignKey(Material, on_delete=models.CASCADE, related_name='questions')
+    title = models.CharField(max_length=225)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='choices')
+    text = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.text
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    selected_choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.question.title} - {self.selected_choice.text}"
