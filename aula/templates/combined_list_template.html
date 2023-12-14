@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}資料一覧{% endblock %}
+
+{% block contents %}
+
+{% if user.role == 'TEACHER' %}
+{% include 'post_btn.html' %}
+{% endif %}
+
+<!-- その他のコンテンツ -->
+
+<div class="container">
+    {% for item in combined_list %}
+    {% if item|class_name == 'Material' %}
+    <!-- Materialの表示 -->
+    {% if item.role == 'material' %}
+    <div class="container-sm text-center border border-dark-subtle rounded-3" onMouseOut="this.style.background='#fff';"
+         onMouseOver="this.style.background='#ccc'">
+        <div class="row d-flex justify-content-around">
+            <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
+               href="{% url 'aula:material_detail' item.pk%}" style="display: inline-block">
+                <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
+                    <p style="margin: 0;">
+                        <!--    投稿したユーザー名を出力-->
+                        {{ item.teacher.username }}さんが資料を投稿しました:<strong>{{ item.title }}</strong>
+                    </p>
+                    <small>
+                        <!--   投稿日時フィールドを出力-->
+                        {{ item.created_at | date:'m月d日' }}
+                    </small>
+                </div>
+            </a>
+
+        </div>
+    </div>
+    <br>
+    {% endif %}
+    {% elif item|class_name == 'Assignment' %}
+    <!-- Assignmentの表示 -->
+    <div class="assignment-display">...</div>
+    {% elif item|class_name == 'Question' %}
+    <!-- Questionの表示 -->
+    <div class="question-display">...</div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock %}

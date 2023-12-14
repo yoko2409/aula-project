@@ -10,6 +10,9 @@ from django.contrib.auth.decorators import login_required
 from .models import Course, Material, Comment, Note, Assignment, Submission, Question, Choice, Answer
 from django.views import View, generic
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import HttpResponseRedirect
+from itertools import chain
+from operator import attrgetter
 
 
 # Create your views here.
@@ -24,6 +27,61 @@ class IndexView(ListView):
                 return Course.objects.filter(teacher=user).order_by('created_at')
             else:
                 return Course.objects.filter(students=user).order_by('created_at')
+
+
+class CourseItemView(DetailView):
+    model = Course
+    template_name = 'course_item.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        materials = Material.objects.filter(course_name=self.object)
+        assignments = Assignment.objects.filter(course=self.object)
+        questions = Question.objects.filter(material__course_name=self.object)
+
+        # 結合して並び替え
+        combined_list = sorted(
+            chain(materials, assignments, questions),
+            key=attrgetter('created_at'),
+            reverse=True
+        )
+
+        context['combined_list'] = combined_list
+
+        now = timezone.now()
+        current_user = self.request.user
+        is_teacher = current_user.role == 'TEACHER'
+
+        for item in context['combined_list']:
+            if hasattr(item, 'due_date'):  # Assignmentオブジェクトをチェック
+                submission = Submission.objects.filter(
+                    assignment=item,
+                    student=current_user
+                ).order_by('-timestamp').first()  # 最新の提出を取得
+
+                if submission:
+                    if submission.status == 'graded':
+                        # 評価済みの場合、通常の表示
+                        item.display_type = 'normal'
+                    elif submission.status == 'resubmission_requested':
+                        # 再提出要求の場合、特別な表示
+                        item.display_type = 'resubmit'
+                    else:
+                        # 提出済みの場合、通常の表示
+                        item.display_type = 'normal'
+                else:
+                    if item.due_date < now:
+                        # 未提出で期限切れの場合、特別な表示
+                        item.display_type = 'overdue'
+                    else:
+                        # それ以外の場合、通常の表示
+                        item.display_type = 'normal'
+
+                # 教師の場合、常に通常の表示
+                if is_teacher:
+                    item.display_type = 'normal'
+
+        return context
 
 
 @method_decorator(login_required, name='dispatch')
@@ -116,7 +174,6 @@ class MaterialUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         return self.request.user == self.get_object().teacher
-
 
     def get_success_url(self):
         material_id = self.object.id
@@ -226,6 +283,7 @@ class NoteDeleteView(LoginRequiredMixin, DeleteView):
         self.object = self.get_object()
         return super(NoteDeleteView, self).delete(request, *args, **kwargs)
 
+
 class AssignmentListView(ListView):
     model = Assignment
     template_name = 'assignment_list.html'
@@ -240,7 +298,23 @@ class AssignmentListView(ListView):
         context = super(AssignmentListView, self).get_context_data(**kwargs)
         course_id = self.kwargs.get('course_id')
         context['course_obj'] = get_object_or_404(Course, id=course_id)
-        context['now'] = timezone.now()  # 現在の日付と時刻を追加
+        context['now'] = timezone.now()
+        user = self.request.user
+        context['is_teacher'] = user.role == 'TEACHER'  # または適切なロジックを使用して教師を判断
+
+        # この部分を修正
+        if not context['is_teacher']:
+            assignments = context['assignments']
+            user = self.request.user
+            for assignment in assignments:
+                submissions = Submission.objects.filter(assignment=assignment, student=user)
+                assignment.submitted = submissions.exists()
+                if assignment.submitted:
+                    latest_submission = submissions.latest('timestamp')
+                    assignment.resubmission_requested = latest_submission.status == 'resubmission_requested'
+                else:
+                    assignment.resubmission_requested = False
+
         return context
 
 
@@ -269,6 +343,9 @@ class AssignmentDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['submissions'] = Submission.objects.filter(assignment=self.object)
+        submissions = Submission.objects.filter(assignment=self.object)
+        user_last_submission = submissions.filter(student=self.request.user).order_by('-timestamp').first()
+        context['user_last_submission'] = user_last_submission
         return context
 
 
@@ -324,9 +401,29 @@ class SubmissionEvaView(LoginRequiredMixin, UpdateView):
     form_class = SubmissionEvaForm
     template_name = 'submission_eva.html'
 
+    def form_valid(self, form):
+        # フォームが有効な場合、先に基本のロジックを実行
+        response = super().form_valid(form)
+
+        # 評価が完了したので、提出物のステータスを更新
+        submission = self.object
+        submission.status = 'graded'  # ここで設定したいステータスに変更
+        submission.save()
+
+        return response
+
     def get_success_url(self):
         assignment_id = self.object.assignment.id
         return reverse_lazy('aula:assignment_result', args=(assignment_id,))
+
+
+class RequestResubmissionView(LoginRequiredMixin, View):
+    def post(self, request, submission_id):
+        submission = get_object_or_404(Submission, id=submission_id)
+        submission.status = 'resubmission_requested'
+        submission.save()
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @method_decorator(login_required, name='dispatch')
@@ -348,6 +445,7 @@ class QuestionMaterialCreateView(CreateView):
         course_id = self.object.course_name.id
         return reverse_lazy('aula:material_list', args=(course_id,))
 
+
 class QuestionMaterialDetail(LoginRequiredMixin, DetailView):
     template_name = 'questions/question_material_detail.html'
     model = Material
@@ -361,6 +459,7 @@ class QuestionMaterialDetail(LoginRequiredMixin, DetailView):
         context['questions'] = Question.objects.filter(material=material)
 
         return context
+
 
 class QuestionCreateView(UserPassesTestMixin, CreateView):
     model = Question
@@ -392,6 +491,7 @@ class QuestionDetailView(LoginRequiredMixin, DetailView):
         context['choices'] = self.object.choices.all()
         return context
 
+
 @method_decorator(login_required, name='dispatch')
 class QuestionMaterialCreateView(CreateView):
     form_class = MaterialForm
@@ -410,6 +510,7 @@ class QuestionMaterialCreateView(CreateView):
     def get_success_url(self):
         course_id = self.object.course_name.id
         return reverse_lazy('aula:question_list', args=(course_id,))
+
 
 class QuestionListView(LoginRequiredMixin, View):
 
@@ -466,6 +567,7 @@ class AnswerQuestionView(View):
         # フォームの再表示
         forms = {question.id: AnswerForm(question=question) for question in questions}
         return render(request, 'questions/question_answer.html', {'forms': forms, 'questions': questions})
+
 
 def question_choice_create_view(request, pk):
     material = get_object_or_404(Material, pk=pk)

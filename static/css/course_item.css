@@ -1,0 +1,6 @@
+.nav-link.active {
+    background-color: transparent; /* 背景色を透明に設定 */
+    color: #000; /* テキスト色を黒に維持 */
+    border: 1px solid #fff; /* 青い線で囲む */
+    border-radius: 4px; /* 角の丸みを追加 */
+}

@@ -24,45 +24,68 @@
 <br>
 <div class="container">
     {% for assignment in assignments %}
-        <!-- 現在の日付と課題の期限を比較 -->
-        {% if assignment.due_date < now %}
-            <!-- 期限切れの場合は赤い背景色とその他のスタイルを適用 -->
-            <div class="container-sm text-center border border-danger rounded-3" style="background-color: red;">
-                <div class="row d-flex justify-content-around">
-                    <a class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0" href="{% url 'aula:assignment_detail' assignment.id %}" style="display: inline-block;">
-                        <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left; font-weight: bold;">
-                            <p style="margin: 0; color: white;">
-                                <span style="color: yellow;">&#9888;</span> <!-- 警告アイコン -->
-                                {{ assignment.teacher.username }}さんが課題を投稿しました: <strong>{{ assignment.title }}</strong>
-                                <span style="color: yellow;">&#9888;</span> <!-- 警告アイコン -->
-                            </p>
-                            <small style="color: white">
-                                {{ assignment.created_at | date:'m月d日' }}
-                                (期限: {{ assignment.due_date | date:'m月d日' }})
-                            </small>
-                        </div>
-                    </a>
+    <!-- 現在の日付と課題の期限を比較 -->
+    {% if not is_teacher %}
+    {% if assignment.due_date < now and not assignment.submitted or assignment.resubmission_requested %}
+    <!-- 期限切れの場合は赤い背景色とその他のスタイルを適用 -->
+    <div class="container-sm text-center border border-danger rounded-3" style="background-color: red;">
+        <div class="row d-flex justify-content-around">
+            <a class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
+               href="{% url 'aula:assignment_detail' assignment.id %}" style="display: inline-block;">
+                <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left; font-weight: bold;">
+                    <p style="margin: 0; color: white;">
+                        <span style="color: yellow;">&#9888;</span> <!-- 警告アイコン -->
+                        {{ assignment.teacher.username }}さんが課題を投稿しました: <strong>{{ assignment.title }}</strong>
+
+                    </p>
+                    <small style="color: white">
+                        {{ assignment.created_at | date:'m月d日' }}
+                        (期限: {{ assignment.due_date | date:'m月d日' }})
+                    </small>
                 </div>
-            </div>
-        {% else %}
-            <!-- 期限内の場合は通常のスタイルを適用 -->
-            <div class="container-sm text-center border border-dark-subtle rounded-3" onMouseOut="this.style.background='#fff';" onMouseOver="this.style.background='#ccc'">
-                <div class="row d-flex justify-content-around">
-                    <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0" href="{% url 'aula:assignment_detail' assignment.id %}" style="display: inline-block;">
-                        <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
-                            <p style="margin: 0;">
-                                {{ assignment.teacher.username }}さんが課題を投稿しました: <strong>{{ assignment.title }}</strong>
-                            </p>
-                            <small>
-                                {{ assignment.created_at | date:'m月d日' }}
-                                (期限: {{ assignment.due_date | date:'m月d日' }})
-                            </small>
-                        </div>
-                    </a>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <!-- 期限内の場合は通常のスタイルを適用 -->
+    <div class="container-sm text-center border border-dark-subtle rounded-3" onMouseOut="this.style.background='#fff';"
+         onMouseOver="this.style.background='#ccc'">
+        <div class="row d-flex justify-content-around">
+            <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
+               href="{% url 'aula:assignment_detail' assignment.id %}" style="display: inline-block;">
+                <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
+                    <p style="margin: 0;">
+                        {{ assignment.teacher.username }}さんが課題を投稿しました: <strong>{{ assignment.title }}</strong>
+                    </p>
+                    <small>
+                        {{ assignment.created_at | date:'m月d日' }}
+                        (期限: {{ assignment.due_date | date:'m月d日' }})
+                    </small>
                 </div>
-            </div>
-        {% endif %}
-        <br>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="container-sm text-center border border-dark-subtle rounded-3" onMouseOut="this.style.background='#fff';"
+         onMouseOver="this.style.background='#ccc'">
+        <div class="row d-flex justify-content-around">
+            <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
+               href="{% url 'aula:assignment_detail' assignment.id %}" style="display: inline-block;">
+                <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
+                    <p style="margin: 0;">
+                        {{ assignment.teacher.username }}さんが課題を投稿しました: <strong>{{ assignment.title }}</strong>
+                    </p>
+                    <small>
+                        {{ assignment.created_at | date:'m月d日' }}
+                        (期限: {{ assignment.due_date | date:'m月d日' }})
+                    </small>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    <br>
     {% endfor %}
 </div>
 

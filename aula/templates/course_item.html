@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}コース資料{% endblock %}
+
+
+{% block contents %}
+
+{% if user.role == 'TEACHER' %}
+{% include 'post_btn2.html' %}
+{% endif %}
+
+<br>
+<section class="rounded-3 bg-primary py-5 text-center container">
+    <div class="row py-lg-5">
+        <div class="col-lg-6 col-md-8 mx-auto">
+            <h1 class="text-bg-primary">
+                {{ object.title }}
+            </h1>
+        </div>
+    </div>
+</section>
+<br>
+{% include 'trans_btn2.html' %}
+<br>
+
+<div class="container">
+    {% for item in combined_list %}
+    <div>
+        {% if item|class_name == 'Material' %}
+        {% if item.role == 'material' %}
+        <div class="container-sm text-center border border-dark-subtle rounded-3"
+             onMouseOut="this.style.background='#fff';"
+             onMouseOver="this.style.background='#ccc'">
+            <div class="row d-flex justify-content-around">
+                <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
+                   href="{% url 'aula:material_detail' item.pk%}" style="display: inline-block">
+                    <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
+                        <p style="margin: 0;">
+                            <!--    投稿したユーザー名を出力-->
+                            {{ item.teacher.username }}さんが資料を投稿しました:<strong>{{ item.title }}</strong>
+                        </p>
+                        <small>
+                            <!--   投稿日時フィールドを出力-->
+                            {{ item.created_at | date:'m月d日' }}
+                        </small>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+        <br>
+
+        {% elif item.role == 'question' %}
+        <div class="container-sm text-center border border-dark-subtle rounded-3"
+             onMouseOut="this.style.background='#fff';"
+             onMouseOver="this.style.background='#ccc'">
+            <div class="row d-flex justify-content-around">
+                <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
+                   href="{% url 'aula:question_material_detail' item.pk%}" style="display: inline-block">
+                    <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
+                        <p style="margin: 0;">
+                            <!--    投稿したユーザー名を出力-->
+                            {{ item.teacher.username }}さんが質問を投稿しました:<strong>{{ item.title }}</strong>
+                        </p>
+                        <small>
+                            <!--   投稿日時フィールドを出力-->
+                            {{ item.created_at | date:'m月d日' }}
+                        </small>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+        <br>
+        {% endif %}
+        {% elif item|class_name == 'Assignment' %}
+        <!-- Assignmentの表示 -->
+        {% if not is_teacher %}
+        {% if item.display_type == 'overdue' or item.display_type == 'resubmit' %}
+        <!-- 期限切れまたは再提出が必要な場合のスタイル -->
+        <div class="container-sm text-center border border-danger rounded-3" style="background-color: red;">
+            <div class="row d-flex justify-content-around">
+                <a class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
+                   href="{% url 'aula:assignment_detail' item.id %}" style="display: inline-block;">
+                    <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left; font-weight: bold;">
+                        <p style="margin: 0; color: white;">
+                            <span style="color: yellow;">&#9888;</span> <!-- 警告アイコン -->
+                            {{ item.teacher.username }}さんが課題を投稿しました: <strong>{{ item.title }}</strong>
+
+                        </p>
+                        <small style="color: white">
+                            {{ item.created_at | date:'m月d日' }}
+                            (期限: {{ item.due_date | date:'m月d日' }})
+                        </small>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <!-- 通常のスタイル -->
+        <div class="container-sm text-center border border-dark-subtle rounded-3"
+             onMouseOut="this.style.background='#fff';"
+             onMouseOver="this.style.background='#ccc'">
+            <div class="row d-flex justify-content-around">
+                <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
+                   href="{% url 'aula:assignment_detail' item.id %}" style="display: inline-block;">
+                    <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
+                        <p style="margin: 0;">
+                            {{ item.teacher.username }}さんが課題を投稿しました: <strong>{{ item.title }}</strong>
+                        </p>
+                        <small>
+                            {{ item.created_at | date:'m月d日' }}
+                            (期限: {{ item.due_date | date:'m月d日' }})
+                        </small>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        {% else %}
+        <!-- 教師の場合の表示 -->
+        <div class="container-sm text-center border border-dark-subtle rounded-3"
+             onMouseOut="this.style.background='#fff';"
+             onMouseOver="this.style.background='#ccc'">
+            <div class="row d-flex justify-content-around">
+                <a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0"
+                   href="{% url 'aula:assignment_detail' item.id %}" style="display: inline-block;">
+                    <div class="card-body cord col-4 col-sm-6 p-3" style="text-align: left;">
+                        <p style="margin: 0;">
+                            {{ item.teacher.username }}さんが課題を投稿しました: <strong>{{ item.title }}</strong>
+                        </p>
+                        <small>
+                            {{ item.created_at | date:'m月d日' }}
+                            (期限: {{ item.due_date | date:'m月d日' }})
+                        </small>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        <br>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

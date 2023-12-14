@@ -144,6 +144,13 @@ class Assignment(models.Model):
 
 
 class Submission(models.Model):
+    STATUS_CHOICES = [
+        ('submitted', 'Submitted'),
+        ('resubmission_requested', 'Resubmission_Requested'),
+        ('graded', 'Graded'),
+    ]
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='submitted')
+
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='submissions')
     submitted_file = models.FileField(upload_to='submissions/')

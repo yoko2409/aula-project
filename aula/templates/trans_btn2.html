@@ -1,0 +1,20 @@
+<nav class="container rounded-3 navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <div class="d-flex justify-content-evenly collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'course_item' %}active{% endif %}" href="{% url 'aula:course_item' object.pk %}">ストリーム</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'material_list' %}active{% endif %}" href="{% url 'aula:material_list' object.pk %}">資料</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'assignment_list' %}active{% endif %}" href="{% url 'aula:assignment_list' object.pk %}">課題</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'question_list' %}active{% endif %}" href="{% url 'aula:question_list' object.pk %}">質問</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

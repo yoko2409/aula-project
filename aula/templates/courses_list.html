@@ -8,7 +8,7 @@
 
             <div class="col">
                 <div class="card shadow-sm">
-                    <a href="{% url 'aula:material_list' record.pk %}">
+                    <a href="{% url 'aula:course_item' record.pk %}">
                         {% if record.image %}
                         <img src="{{ record.image.url }}" class="bd-placeholder-img card-img-top"
                              width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img"
@@ -40,14 +40,10 @@
                                 </button>
                                 <!--                  記事一覧を表示するボタン  -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary"
-                                        onclick="location.href='{% url 'aula:material_list' record.pk%}'">
+                                        onclick="location.href='{% url 'aula:course_item' record.pk%}'">
                                     資料
                                 </button>
-                                <!--                  課題一覧を表示するボタン  -->
-                                <button type="button" class="btn btn-sm btn-outline-secondary"
-                                        onclick="location.href='{% url 'aula:assignment_list' record.pk %}'">
-                                    課題
-                                </button>
+
                             </div>
                             <!--                投稿したユーザー名を出力-->
                             <small class="text-muted">{{ record.teacher.username }}</small>

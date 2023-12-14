@@ -1,15 +1,35 @@
 <div class="container mt-5">
     <h1>タイトル：{{ object.title }}</h1>
     <p>説明文：{{ object.description }}</p>
-    {% for submission in submissions %}
-    <hr>
-    <p>提出者: {{ submission.student.username }}</p>
-    <p>タイムスタンプ: {{ submission.timestamp }}</p>
-    <p>ファイル：<a href="{{ submission.submitted_file.url }}" download>{{ submission.submitted_file }}</a></p>
-    <p>評価: {{ submission.grade }}/100</p>
 
-    <!-- その他のsubmissionのフィールドを表示する -->
-    <a href="{% url 'aula:submission_evaluation' submission.pk%}">評価する</a>
+    {% for submission in submissions %}
+            <hr>
+    <div class="d-flex">
+        <div>
+            {% if submission.status == 'submitted' %}
+            <p>状態: 提出済み</p>
+            {% elif submission.status == 'resubmission_requested' %}
+            <p>状態: 再提出要求</p>
+            {% elif submission.status == 'graded' %}
+            <p>状態: 評価済み</p>
+            {% else %}
+            <p>状態: 未定義</p>
+            {% endif %}
+            <p>提出者: {{ submission.student.username }}</p>
+            <p>タイムスタンプ: {{ submission.timestamp }}</p>
+            <p>ファイル：<a href="{{ submission.submitted_file.url }}" download>{{ submission.submitted_file }}</a></p>
+            <p>評価: {{ submission.grade }}/100</p>
+
+            <!-- 評価するリンク -->
+            <a class="btn btn-primary" href="{% url 'aula:submission_evaluation' submission.pk %}">評価する</a>
+        </div>
+
+        <!-- 再提出要求フォーム -->
+        <form method="post" action="{% url 'aula:request_resubmission' submission.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning">再提出を要求</button>
+        </form>
+    </div>
     {% endfor %}
     <hr>
 </div>
