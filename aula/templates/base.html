@@ -147,49 +147,44 @@
     </style>
     <style type="text/css">
     /* ボタンの共通スタイル */
-    .custom-button {
-        padding: 10px 15px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-    }
-
-    /* 追加ボタンのスタイル */
-.add-row {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: .375rem .75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-radius: .25rem;
-    transition: color .15s ease-in-out, background-color .15s ease-in-out,
-                border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+.custom-button, .add-row, .delete-row {
+    align-items: flex-start;
+    appearance: button;
+    background-color: rgb(13, 110, 253); /* Bootstrap Primary Color */
+    border-color: rgb(13, 110, 253);
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 0.555556px;
+    box-sizing: border-box;
+    color: rgb(255, 255, 255); /* White Text */
+    cursor: pointer;
+    display: inline-block;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    height: 37.1007px;
+    line-height: 24px;
+    margin-top: 16px;
+    padding: 6px 12px;
+    text-align: center;
+    text-decoration: none;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    user-select: none;
+    vertical-align: middle;
+    width: 105.104px;
 }
 
-/* 削除ボタンのスタイル */
+/* ホバーエフェクト */
+.custom-button:hover, .add-row:hover, .delete-row:hover {
+    background-color: #0056b3; /* 濃い青色へのホバー効果 */
+}
+
+/* 削除ボタンの特別なスタイル */
 .delete-row {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: .375rem .75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-radius: .25rem;
-    transition: color .15s ease-in-out, background-color .15s ease-in-out,
-                border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    background-color: #dc3545; /* Bootstrap Danger Color */
+    border-color: #dc3545;
 }
 
-
-    /* 共通スタイルを適用 */
-    .add-row, .delete-row {
-        margin-right: 10px;
-    }
-
-    /* ボタンホバーエフェクト */
-    .add-row:hover, .delete-row:hover {
-        background-color: #0056b3;
-    }
 </style>
 
 </head>
