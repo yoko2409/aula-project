@@ -13,6 +13,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect
 from itertools import chain
 from operator import attrgetter
+from django.forms import formset_factory
+from django.forms import BaseFormSet
+
+
+class BaseAnswerFormSet(BaseFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for form in self.forms:
+            form.empty_permitted = False
 
 
 # Create your views here.
@@ -192,10 +201,10 @@ class MaterialUpdateDoneView(TemplateView):
 class MaterialListView(View):
 
     def get(self, request, course_id):
-        materials = Material.objects.filter(course_name=course_id)
+        # `created_at`で降順に並べ替える
+        materials = Material.objects.filter(course_name=course_id).order_by('-created_at')
         course_obj = Course.objects.get(id=course_id)
         return render(request, 'material_list.html', {'materials': materials, 'course_obj': course_obj})
-
 
 class MaterialDetailView(DetailView):
     template_name = 'material_detail.html'
@@ -292,7 +301,8 @@ class AssignmentListView(ListView):
     def get_queryset(self):
         course_id = self.kwargs.get('course_id')
         course = get_object_or_404(Course, id=course_id)
-        return Assignment.objects.filter(course=course)
+        # `created_at`で降順に並べ替える
+        return Assignment.objects.filter(course=course).order_by('-created_at')
 
     def get_context_data(self, **kwargs):
         context = super(AssignmentListView, self).get_context_data(**kwargs)
@@ -515,9 +525,9 @@ class QuestionMaterialCreateView(CreateView):
 class QuestionListView(LoginRequiredMixin, View):
 
     def get(self, request, course_id):
-        materials = Material.objects.filter(course_name=course_id)
+        questions = Material.objects.filter(role='question').order_by('-created_at')
         course_obj = Course.objects.get(id=course_id)
-        return render(request, 'questions/question_list.html', {'materials': materials, 'course_obj': course_obj})
+        return render(request, 'questions/question_list.html', {'materials': questions, 'course_obj': course_obj})
 
 
 class ChoiceCreateView(LoginRequiredMixin, CreateView):
@@ -537,52 +547,56 @@ class ChoiceCreateView(LoginRequiredMixin, CreateView):
 
 
 class AnswerQuestionView(View):
+    template_name = 'questions/question_answer.html'
+
     def get(self, request, pk):
-        material = get_object_or_404(Material, pk=pk)
-        questions = material.questions.all()
-        forms = {question.id: AnswerForm(question=question) for question in questions}
-        return render(request, 'questions/question_answer.html', {'forms': forms, 'questions': questions})
-
+        material = Material.objects.get(pk=pk)
+        questions = material.questions.all().prefetch_related('choices')  # 選択肢も取得
+        form = AnswerForm(questions=questions)
+        return render(request, self.template_name, {
+            'material': material,
+            'form': form,
+            'questions_with_choices': [
+                (question, question.choices.all()) for question in questions
+            ]
+        })
     def post(self, request, pk):
-        material = get_object_or_404(Material, pk=pk)
+        material = Material.objects.get(pk=pk)
         questions = material.questions.all()
-        answers = []
-        for question in questions:
-            form = AnswerForm(request.POST, question=question)
-            if form.is_valid():
-                answer = form.save(commit=False)
-                answer.question = question
-                answer.user = request.user
-                # フォームデータから選択された選択肢を取得
-                choice_field_name = f'selected_choice_{question.id}'
-                answer.selected_choice = form.cleaned_data[choice_field_name]
-                answers.append(answer)
+        form = AnswerForm(request.POST, questions=questions)
 
-        # すべてのフォームが有効であれば回答を保存
-        if len(answers) == len(questions):
-            for answer in answers:
-                answer.save()
-            return redirect('aula:question_material_detail', pk=material.pk)
+        if form.is_valid():
+            # フォームが有効ならばデータを保存
+            for question in questions:
+                answer = Answer.objects.create(
+                    question=question,
+                    user=request.user,
+                    selected_choice=form.cleaned_data[f'selected_choice_{question.id}']
+                )
+            return redirect('aula:question_material_detail', pk=pk)  # 成功時のリダイレクト先を指定
 
-        # フォームの再表示
-        forms = {question.id: AnswerForm(question=question) for question in questions}
-        return render(request, 'questions/question_answer.html', {'forms': forms, 'questions': questions})
+        return render(request, self.template_name, {'material': material, 'form': form})
 
 
 def question_choice_create_view(request, pk):
     material = get_object_or_404(Material, pk=pk)
+
     if request.method == 'POST':
         form = QuestionForm(request.POST)
-        formset = ChoiceFormSet(request.POST)
+        formset = ChoiceFormSet(request.POST, prefix='choice')
         if form.is_valid() and formset.is_valid():
             question = form.save(commit=False)
             question.material = material
             question.save()
-            formset.instance = question
-            formset.save()
+
+            # Save each choice form in the formset as a separate record
+            for choice_form in formset:
+                if not choice_form.cleaned_data.get('DELETE', False):
+                    choice = choice_form.save(commit=False)
+                    choice.question = question
+                    choice.save()
             return redirect('aula:question_material_detail', pk=pk)
     else:
         form = QuestionForm()
-        formset = ChoiceFormSet()
-
+        formset = ChoiceFormSet(prefix='choice')
     return render(request, 'questions/choice_create.html', {'form': form, 'formset': formset})

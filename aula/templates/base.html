@@ -3,14 +3,17 @@
 {% load static widget_tweaks %}
 <html lang="ja" data-bs-theme="auto">
 <head>
-    <script>
-        function submitOnEnter(event) {
-            if (event.which === 13) {  // 13はEnterキーのキーコード
-                event.preventDefault();
-                event.target.form.submit();
-            }
-        }
-    </script>
+    <!--    <script>-->
+    <!--        function submitOnEnter(event) {-->
+    <!--            if (event.which === 13) {  // 13はEnterキーのキーコード-->
+    <!--                event.preventDefault();-->
+    <!--                event.target.form.submit();-->
+    <!--            }-->
+    <!--        }-->
+    <!--    </script>-->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.formset/1.2.2/jquery.formset.min.js" integrity="sha512-ltwjKsDTo3hW/wV66ZaEkf2wOAFxmg7rWM76J8kOcYKLSKy44WBYO/BFaNNH3NGDS8BSz3meB9wtSnm41oL+pA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!--    <script src="{% static 'js/question.js' %}" defer></script>-->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -75,7 +78,7 @@
         }
 
         .btn-bd-primary {
-          --bd-violet-bg: #712cf9;
+          --bd-violet-bg: #0d6efd;
           --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
 
           --bs-btn-font-weight: 600;
@@ -93,6 +96,54 @@
         .bd-mode-toggle {
           z-index: 1500;
         }
+        .form-control {
+        white-space: pre-line;
+    }
+        .custom-form {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+}
+        /* styles.css */
+.custom-form {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.custom-file {
+    position: relative;
+    overflow: hidden;
+}
+
+.custom-file-input {
+    position: absolute;
+    z-index: 2;
+    opacity: 0;
+}
+
+.custom-file-label {
+    position: relative;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.custom-file-input:focus + .custom-file-label,
+.custom-file-input.has-focus + .custom-file-label {
+    border-color: #0056b3;
+}
+
+.custom-file-input:lang(en)~.custom-file-label::after {
+    content: "Choose File";
+}
+
+.custom-file-input~.custom-file-label[data-browse]:before {
+    content: attr(data-browse);
+}
+
     </style>
 </head>
 
@@ -166,5 +217,6 @@
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous">
 </script>
+
 </body>
 </html>

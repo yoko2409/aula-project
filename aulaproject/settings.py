@@ -144,3 +144,7 @@ EMAIL_USE_TLS = True
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # mediaのURLを登録
 MEDIA_URL = '/media/'
+
+LOGIN_REDIRECT_URL = 'aula:index'
+LOGIN_URL = 'accounts:login'
+

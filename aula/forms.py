@@ -1,6 +1,7 @@
 from django.forms import ModelForm, inlineformset_factory
 from .models import Course, Material, Comment, Note, CustomUser, Assignment, Submission, Choice, Answer, Question
 from django import forms
+from django.forms import formset_factory
 
 
 class CourseForm(ModelForm):
@@ -78,6 +79,9 @@ class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
         fields = ['title', 'description', 'due_date']
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': '内容を入力'}),
+        }
 
 class SubmissionForm(forms.ModelForm):
     class Meta:
@@ -93,23 +97,9 @@ class ChoiceForm(forms.ModelForm):
     class Meta:
         model = Choice
         fields = ['text']
-
-class AnswerForm(forms.ModelForm):
-
-    class Meta:
-        model = Answer
-        fields = []
-
-    def __init__(self, *args, **kwargs):
-        question = kwargs.pop('question', None)
-        super(AnswerForm, self).__init__(*args, **kwargs)
-        if question:
-            self.fields[f'selected_choice_{question.id}'] = forms.ModelChoiceField(
-                queryset=question.choices.all(),
-                widget=forms.RadioSelect,
-                empty_label=None
-            )
-
+        widgets = {
+            'text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '選択肢を入力してください'}),
+        }
 
 class QuestionForm(forms.ModelForm):
     class Meta:
@@ -117,3 +107,17 @@ class QuestionForm(forms.ModelForm):
         fields = ['title', 'description']
 
 ChoiceFormSet = inlineformset_factory(Question, Choice, fields=('text',), extra=1,)
+
+class AnswerForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        questions = kwargs.pop('questions', None)
+        super(AnswerForm, self).__init__(*args, **kwargs)
+
+        if questions:
+            for question in questions:
+                choices = question.choices.all()
+                self.fields[f'selected_choice_{question.id}'] = forms.ModelChoiceField(
+                    queryset=choices,
+                    widget=forms.RadioSelect,
+                    empty_label=None
+                )

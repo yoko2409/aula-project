@@ -1,25 +1,30 @@
 {% extends 'base.html' %}
 {% load my_tags %}
+{% load static widget_tweaks %}
 
 {% block title %}質問回答{% endblock %}
 
 {% block contents %}
-<form method="post">
-    {% csrf_token %}
-
-
-{% for question in questions %}
-    <div>
-        <h3>{{ question.title }}</h3>
-        {% with form=forms|get_form:question.id %}
-            {% for field in form %}
-                {{ field.errors }}
-                {{ field }}
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {% endfor %}
-        {% endwith %}
-    </div>
-{% endfor %}
-    <button type="submit">回答</button>
-</form>
+<div class="container mt-4">
+    <form method="post">
+        {% csrf_token %}
+        {% for question, choices in questions_with_choices %}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ question.title }}</h5>
+                    <p class="card-text">{{ question.description }}</p>
+                    {% for choice in choices %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="selected_choice_{{ question.id }}" id="choice{{ choice.id }}" value="{{ choice.id }}">
+                            <label class="form-check-label" for="choice{{ choice.id }}">
+                                {{ choice.text }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary btn-lg btn-block">回答</button>
+    </form>
+</div>
 {% endblock %}

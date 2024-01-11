@@ -2,11 +2,12 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.decorators import login_required
 
 app_name = 'aula'
 
 urlpatterns = [
-                  path('', views.IndexView.as_view(), name='index'),
+                  path('', login_required(views.IndexView.as_view()), name='index'),
                   path('create/', views.CreateCourseView.as_view(), name='create'),
                   path('create_done/', views.CreateSuccessView.as_view(), name='create_done'),
                   path('create/', views.CreateCourseView.as_view(), name='create'),

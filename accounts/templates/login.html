@@ -91,6 +91,10 @@
       .bd-mode-toggle {
         z-index: 1500;
       }
+
+      .btn-hover:hover {
+        color: white;
+      }
     </style>
 
 
@@ -173,7 +177,9 @@
         <input type="password" name="password" class="form-control" id="id_password"
            autocomplete="current-password" placeholder="パスワード" required autofocus>
 
-        <input class="w-100 btn btn-lg btn-primary" type="submit" value="ログイン">
+        <input class="w-100 btn btn-lg btn-primary form-control" type="submit" value="ログイン">
+        <a href="{% url 'accounts:signup' %}" class="w-100 btn btn-lg btn-outline-primary my-2 btn-hover">サインアップ</a>
+
 
 <!--        パスワードリセットページのリンクテキスト-->
         <br><br>

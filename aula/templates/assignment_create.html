@@ -1,10 +1,46 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static widget_tweaks %}
+{% block title %}課題追加{% endblock %}
 
 {% block contents %}
-<h1>Create Assignment</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
-</form>
+<br>
+<div class="contents">
+    <div class="row">
+        <div class="col offset-2">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <th>タイトル：</th>
+                        <td>
+                            <input type="text" name="{{ form.title.name }}" id="id_{{ form.title.name }}"
+                                   class="form-control" placeholder="タイトルを入力">
+                            {{ form.title.errors }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>内容：</th>
+                        <td>
+                            {{ form.description|add_class:"form-control" }}
+                            {{ form.description.errors }}
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <th>添付ファイル：</th>
+                        <td>
+
+                            <input type="date" name="{{ form.due_date.name }}" id="id_{{ form.due_date.name }}"
+                                   class="form-control" placeholder="2002-10-08">
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <button type="submit" class="btn btn-primary">課題を追加</button>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

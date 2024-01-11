@@ -11,7 +11,7 @@
                 {% csrf_token %}
                 <table>
                     <tr>
-                        <th>資料タイトル：</th>
+                        <th>タイトル：</th>
                         <td>
                             <input type="text" name="{{ form.title.name }}" id="id_{{ form.title.name }}"
                                    class="form-control" placeholder="タイトルを入力">
@@ -20,8 +20,9 @@
                     </tr>
 
                     <tr>
-                        <th>資料内容：</th>
+                        <th>内容：</th>
                         <td>{{ form.content|add_class:"form-control" }}</td>
+
                     </tr>
 
                     <tr>

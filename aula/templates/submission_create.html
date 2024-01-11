@@ -1,10 +1,38 @@
 {% extends "base.html" %}
 
+{% block title %}課題提出{% endblock %}
+
 {% block contents %}
-<h1>Submit Work</h1>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">提出する</button>
-</form>
+<div class="container mt-5">
+    <div class="card text-center" style="max-width: 400px; margin: 0 auto;">
+        <div class="card-body">
+            <h1 class="card-title mb-4">課題を提出</h1>
+            <form method="post" enctype="multipart/form-data" class="custom-form">
+                {% csrf_token %}
+                <!-- ファイル名表示エリア -->
+                <div class="mb-2" id="fileNameDisplay" style="border: 1px solid #ced4da; padding: 10px; margin-top: 10px; background-color: white;"></div>
+
+                <!-- ファイル選択ボタン -->
+                <div class="d-block btn btn-primary custom-file mb-3">
+                    <input type="file" class="custom-file-input" id="fileInput" name="submitted_file"
+                           accept=".pdf, .doc, .docx" onchange="updateFileNameDisplay()">
+                    <label class="pt-2 pb-2" for="fileInput">ファイルを選択</label>
+                </div>
+
+                <!-- 提出するボタン -->
+                <button type="submit" class="d-block custom-file btn btn-primary w-100 mt-3 pt-3 pb-3">提出する</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateFileNameDisplay() {
+        var input = document.getElementById('fileInput');
+        var fileNameDisplay = document.getElementById('fileNameDisplay');
+
+        var fileName = input.files[0] ? input.files[0].name : 'ファイルが選択されていません';
+        fileNameDisplay.innerHTML = '<p>' + fileName + '</p>';
+    }
+</script>
 {% endblock %}

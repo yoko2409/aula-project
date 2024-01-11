@@ -1,24 +1,55 @@
 {% extends 'base.html' %}
 {% load static widget_tweaks %}
+
 {% block title %}質問追加{% endblock %}
 
 {% block contents %}
-<br>
-<div class="container">
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <div id="formset">
-            {{ formset.management_form }}
-            {% for form in formset %}
-            <div class="formset-row">
-                {{ form.as_p }}
-            </div>
-            {% endfor %}
-        </div>
-        <button type="submit">追加</button>
-    </form>
+<div class="container mt-5">
+    <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-body">
+            <h1 class="card-title mb-4">質問を追加</h1>
+            <form method="post" class="my-4" id="question-form">
+                {% csrf_token %}
 
+                <!-- 質問フォーム -->
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">タイトル</label>
+                    {{ form.title }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">内容</label>
+                    {{ form.description }}
+                </div>
+
+                <!-- 選択肢フォームセット -->
+                <div id="formset" class="mt-4">
+                    {{ formset.management_form }}
+                    {% for form in formset %}
+                    <div class="formset-row mb-3">
+                        <label for="{{ form.text.id_for_label }}" class="form-label">選択肢</label>
+                        {{ form.text }}
+                    </div>
+                    {% endfor %}
+                </div>
+                <!-- 追加ボタン -->
+                <button type="button" id="add-choice" class="add-row btn btn-secondary mt-3">選択肢を追加</button>
+
+                <!-- 提出ボタン -->
+                <button type="submit" class="btn btn-primary mt-3">質問を追加</button>
+            </form>
+        </div>
+    </div>
 </div>
-<script src="{% static 'js/question.js' %}" defer></script>
+
+<script type="text/javascript">
+    $('#formset').formset({
+        addText: '選択肢を追加',
+        deleteText: '削除',
+        prefix: 'choice',  // フォームセットのプレフィックス
+        formCssClass: 'dynamic-formset',  // ダイナミックフォームセットのクラス
+        addCssClass: 'add-row',  // 追加ボタンのクラス
+        deleteCssClass: 'delete-row',  // 削除ボタンのクラス
+        // その他のオプション...
+    });
+</script>
 {% endblock %}

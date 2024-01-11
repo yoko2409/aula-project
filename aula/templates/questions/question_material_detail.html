@@ -8,15 +8,12 @@
         <h2>{{ object.title }}</h2>
         <p class="text-muted">{{ object.teacher }}・{{ object.created_at|date:'m月d日' }}</p>
         <hr class="border border-primary">
-        <p class="mt-3">{{ object.content }}</p>
+        <p class="mt-3">{{ object.content|linebreaksbr }}</p>
 
         <br>
         <!--      ファイルをダウンロードするボタンを出力  -->
         {% if object.file %}
-        <p class="card-text btn btn-primary mt-3">
-            添付ファイル：
-            <a href="{{ object.file.url }}" download>添付ファイルをダウンロード</a>
-        </p>
+        <a class="mb-3 btn btn-outline-primary mt-3" href="{{ object.file.url }}" download>添付ファイル：{{ object.file }}</a>
         {% else %}
         <p class="card-text text-danger">
             添付ファイルがありません。
@@ -47,15 +44,18 @@
 
             <div>
                 {% if object.teacher == user %}
-                <a href="{% url 'aula:question_create' object.pk %}">質問追加</a>
+                <a class="btn btn-primary" href="{% url 'aula:question_create' object.pk %}">質問追加</a>
                 {% endif %}
-                <a href="{% url 'aula:question_answer' object.pk %}">質問回答</a>
+                <a class="btn btn-primary" href="{% url 'aula:question_answer' object.pk %}">質問回答</a>
             </div>
         </div>
 
         <hr class="my-4">
         <!-- 質問と選択肢、回答のセクション -->
 
+        {% if not questions %}
+        ない
+        {% endif %}
         {% if questions %}
         {% if object.teacher == user %}
         <div class="mt-4">
@@ -104,15 +104,14 @@
 
                             <p class=" text-muted align-middle">{{ comment.create_at | date:'m月d日' }}</p>
                         </div>
-                        <p class="card-text">{{ comment.content }}</p>
+                        <p class="card-text">{{ comment.content|linebreaksbr }}</p>
                     </div>
                 </div>
                 {% endfor %}
             </div>
             <!-- コメントのフォーム -->
             <div class="mt-4">
-                <form class="d-flex" action="{% url 'aula:material_comment' object.pk %}" method="post"
-                      onkeypress="submitOnEnter(event)">
+                <form class="d-flex" action="{% url 'aula:material_comment' object.pk %}" method="post">
                     {% csrf_token %}
                     <div class="form-group me-2">
                         {{ comment_form.content|add_class:"form-control" }}
@@ -141,17 +140,16 @@
                         <a href="{% url 'aula:note_delete' note.pk %}"
                            class="btn btn-outline-danger btn-sm">削除</a>
                     </div>
-                    <p class="card-text">{{ note.content }}</p>
+                    <p class="card-text">{{ note.content|linebreaksbr }}</p>
                 </div>
             </div>
             {% endfor %}
         </div>
         <div class="mt-4 mb-4">
-            <form class="d-flex" action="{% url 'aula:material_note' object.pk %}" method="post"
-                  onkeypress="submitOnEnter(event)">
+            <form class="d-flex" action="{% url 'aula:material_note' object.pk %}" method="post">
                 {% csrf_token %}
                 <div class="form-group me-2">
-                    {{ note_form.content|add_class:"form-control" }}
+                    {{ note_form.content|add_class:"form-control"|attr:"required:true" }}
                 </div>
                 <button type="submit" class="btn btn-primary">送信</button>
             </form>

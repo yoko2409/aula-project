@@ -1,46 +1,23 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const formsetContainer = document.querySelector("#formset");
+$(document).ready(function () {
+    $("#add-choice").click(function () {
+        // Clone the last choice form and append it to the formset
+        var lastFormRow = $("#formset .formset-row:last");
+        var newFormRow = lastFormRow.clone();
 
-    function updateElementIndex(el, prefix, index) {
-        var idRegex = new RegExp('(' + prefix + '-\\d+-)');
-        var replacement = prefix + '-' + index + '-';
-        if (el.id) el.id = el.id.replace(idRegex, replacement);
-        if (el.name) el.name = el.name.replace(idRegex, replacement);
-        if (el.htmlFor) el.htmlFor = el.htmlFor.replace(idRegex, replacement);
-    }
-
-    function addNewTextField() {
-        // TOTAL_FORMS要素のセレクタが正しいことを確認してください
-        var totalForms = document.querySelector("#id_choices-TOTAL_FORMS");
-        console.log(totalForms);
-        if (!totalForms) {
-            console.error('TOTAL_FORMS element not found');
-            return;
-        }
-        var formNum = parseInt(totalForms.value);
-        var newForm = document.querySelector('.formset-row').cloneNode(true);
-
-        var newFormFields = newForm.querySelectorAll('input, label, select, textarea');
-        newFormFields.forEach(function(field){
-            updateElementIndex(field, 'choices', formNum);
-            if (field.tagName === 'INPUT' && field.type === 'text') {
-                field.value = '';
-            }
+        // Update id and name attributes for input fields
+        newFormRow.find("input").each(function () {
+            $(this).attr("id", function (_, id) {
+                return id.replace(/\d+/, function (match) {
+                    return parseInt(match) + 1;
+                });
+            }).attr("name", function (_, name) {
+                return name.replace(/\d+/, function (match) {
+                    return parseInt(match) + 1;
+                });
+            }).val("");  // Clear the input field
         });
 
-        formsetContainer.appendChild(newForm);
-        totalForms.setAttribute('value', `${formNum + 1}`);
-
-        // Add focusin event to the new form
-        newForm.querySelector('input[type="text"]').addEventListener('focusin', function (event) {
-            addNewTextField();
-        });
-    }
-
-    formsetContainer.addEventListener('focusin', function (event) {
-        var lastInput = formsetContainer.lastElementChild.querySelector('input[type="text"]');
-        if (event.target === lastInput) {
-            addNewTextField();
-        }
-    }, true);
+        // Append the modified cloned form to the formset
+        $("#formset").append(newFormRow);
+    });
 });
