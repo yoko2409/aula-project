@@ -145,6 +145,40 @@
 }
 
     </style>
+    <style type="text/css">
+    /* ボタンの共通スタイル */
+    .custom-button {
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    /* 追加ボタンのスタイル */
+    .add-row {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+    }
+
+    /* 削除ボタンのスタイル */
+    .delete-row {
+        background-color: #dc3545;
+        color: #fff;
+        border: none;
+    }
+
+    /* 共通スタイルを適用 */
+    .add-row, .delete-row {
+        margin-right: 10px;
+    }
+
+    /* ボタンホバーエフェクト */
+    .add-row:hover, .delete-row:hover {
+        background-color: #0056b3;
+    }
+</style>
+
 </head>
 
 <body>
