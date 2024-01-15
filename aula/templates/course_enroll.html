@@ -2,12 +2,15 @@
 {% block title %}クラス登録{% endblock %}
 {% block contents %}
 <div class="container mt-5">
-    <div class="card-body">
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input class="btn btn-primary" type="submit" value="登録する">
-        </form>
+    <div class="card mx-auto">
+
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input class="btn btn-primary" type="submit" value="登録する">
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}
