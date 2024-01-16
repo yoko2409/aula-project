@@ -1,6 +1,6 @@
 <div class="container mt-5">
     <h1>タイトル：{{ object.title }}</h1>
-    <p>説明文：{{ object.description }}</p>
+    <p>説明文：{{ object.description | linebreaksbr }}</p>
     <hr>
     {% for submission in submissions %}
     {% if user == submission.student %}
