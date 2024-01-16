@@ -19,7 +19,7 @@
             添付ファイルがありません。
         </p>
         {% endif %}
-
+    {% if user.role == 'TEACHER' %}
         <div class="row row-cols-auto">
             <!--            削除ボタンゴミ箱-->
             <div class="col">
@@ -42,6 +42,7 @@
                 </a>
             </div>
         </div>
+        {% endif %}
 
         <hr class="my-4">
 

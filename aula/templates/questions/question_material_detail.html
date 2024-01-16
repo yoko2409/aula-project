@@ -21,6 +21,7 @@
         {% endif %}
 
         <div class="row row-cols-auto">
+        {% if user.role == 'TEACHER' %}
             <!--            削除ボタンゴミ箱-->
             <div class="col">
                 <a href="{% url 'aula:material_delete' material.pk %}">
@@ -41,6 +42,7 @@
                     </svg>
                 </a>
             </div>
+        {% endif %}
 
             <div>
                 {% if object.teacher == user %}
